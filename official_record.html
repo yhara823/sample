@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>2024公式試合記録</title>
+    <style>
+        /* ========== 基本設定 ========== */
+        body {
+            font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+            -webkit-print-color-adjust: exact;
+            color-adjust: exact;
+        }
+        
+        /* ========== ページレイアウト ========== */
+        .sheet {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 0 auto;
+            padding: 8mm;
+            box-sizing: border-box;
+            font-size: 8pt;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* ========== テーブル共通設定 ========== */
+        table { 
+            border-collapse: collapse; 
+            width: 100%; 
+            table-layout: fixed; 
+        }
+        th, td { 
+            border: 1px solid black; 
+            padding: 1px 2px; 
+            text-align: center; 
+            vertical-align: middle; 
+            min-height: 18px; 
+            word-wrap: break-word; 
+        }
+        th { 
+            background-color: #e0e0e0; 
+            font-weight: 500; 
+        }
+        
+        /* ========== ヘッダーセクション ========== */
+        .header { 
+            display: flex; 
+            align-items: center; 
+            border-bottom: 2px solid black; 
+            padding-bottom: 5px; 
+            margin-bottom: 5px; 
+        }
+        .header .logo { 
+            font-size: 1.2em; 
+            font-weight: bold; 
+            padding: 5px 10px; 
+            border: 1px solid black; 
+            margin-right: 20px; 
+        }
+        .header .title-block { 
+            text-align: center; 
+            flex-grow: 1; 
+        }
+        .header h1 { 
+            font-size: 1.4em; 
+            margin: 0; 
+        }
+        .header h2 { 
+            font-size: 1em; 
+            margin: 0; 
+            font-weight: normal; 
+        }
+        
+        /* ========== 試合情報セクション ========== */
+        .game-info { 
+            display: flex; 
+            gap: 5px; 
+            margin-bottom: 5px; 
+        }
+        .game-info .info-left { flex: 2.2; }
+        .game-info .info-right { flex: 1.5; }
+        .info-table td { 
+            text-align: left; 
+            padding-left: 5px; 
+        }
+        .info-table .sign { 
+            text-align: right; 
+            font-style: italic; 
+            padding-right: 5px; 
+        }
+        .ar-label-cell { width: 45px; }
+        
+        /* ========== メインコンテンツ（選手リスト・スコア） ========== */
+        .main-content { 
+            display: flex; 
+            gap: 5px; 
+        }
+        .team-section { flex: 1; }
+        .team-name { 
+            font-weight: bold; 
+            text-align: center; 
+            border: 1px solid black; 
+            border-bottom: none; 
+            padding: 3px; 
+        }
+        .player-list .circled-number { 
+            display: inline-block; 
+            border: 2px solid black; 
+            border-radius: 50%; 
+            width: 15px; 
+            height: 15px; 
+            line-height: 15px; 
+            font-weight: bold; 
+        }
+        .score-section { width: 220px; }
+        .score-section table { margin-bottom: 2px; }
+        .note { 
+            font-size: 8pt; 
+            text-align: left; 
+            margin: 2px 0; 
+        }
+        
+        /* ========== 交替・カード情報セクション ========== */
+        .sub-cards-section { 
+            display: flex; 
+            gap: 5px; 
+            margin-top: 5px; 
+            margin-bottom: 5px; 
+        }
+        .sub-group { flex: 1; }
+        .sub-table { 
+            margin-bottom: 5px; 
+            width: 100%;
+        }
+        .sub-table th, .sub-table td { 
+            height: 18px; 
+            white-space: nowrap;
+            font-size: 7.5pt;
+        }
+        .sub-table .content-cell { white-space: normal; }
+        
+        /* ========== 得点経過セクション ========== */
+        .timeline-section { 
+            flex-grow: 1; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        .timeline-header { 
+            border: 1px solid black; 
+            padding: 3px; 
+            font-weight: bold; 
+            display: flex; 
+            justify-content: space-between; 
+        }
+        .timeline-body { 
+            display: flex; 
+            gap: 5px; 
+            flex-grow: 1; 
+        }
+        .timeline-table .team-name-cell { white-space: normal; }
+        .timeline-table th, .timeline-table td { font-size: 7.5pt; }
+        .timeline-footer { 
+            margin-top: 5px; 
+            border: 1px solid black; 
+            padding: 3px; 
+            font-size: 8pt; 
+        }
+        
+        /* ========== 特記事項セクション ========== */
+        .notes-section { 
+            width: 180px; 
+            border: 1px solid black; 
+            display: flex; 
+            flex-direction: column; 
+        }
+        .notes-header { 
+            text-align: center; 
+            padding: 3px; 
+            border-bottom: 1px solid black; 
+            font-weight: bold; 
+        }
+        .contact-info { 
+            padding: 10px; 
+            font-size: 8pt; 
+            flex-grow: 1; 
+            text-align: left; 
+        }
+    </style>
+</head>
+<body>
+
+<div class="sheet">
+    <!-- ========== ヘッダー：大会情報 ========== -->
+    <header class="header">
+        <div class="logo">KYUSHU<br>RUGBY</div>
+        <div class="title-block">
+            <h1>2024公式試合記録</h1>
+            <h2>大会名: トップキュウシュウリーグ 順位決定トーナメント1回戦</h2>
+        </div>
+    </header>
+    
+    <!-- ========== 試合情報：日時・会場・審判 ========== -->
+    <section class="game-info">
+        <div class="info-left">
+            <table class="info-table">
+                <colgroup>
+                    <col style="width: 15%;">
+                    <col style="width: 45%;">
+                    <col style="width: 15%;">
+                    <col style="width: 25%;">
+                </colgroup>
+                <tr>
+                    <th>対戦日</th>
+                    <td>2024年11月24日(日)</td>
+                    <th>Kick off</th>
+                    <td>12時00分</td>
+                </tr>
+                <tr>
+                    <th>競技場</th>
+                    <td colspan="3">長崎県営放虎原ラグビー場</td>
+                </tr>
+                <tr>
+                    <th rowspan="2">天候</th>
+                    <td>●晴れ ○曇り ○雨 ○雪</td>
+                    <th>観客数</th>
+                    <td>100 人</td>
+                </tr>
+                <tr>
+                    <td>○無風 ●微風 ○弱風 ○強風</td>
+                    <th>グランド<br>状態</th>
+                    <td>●良い ○やや良い ○やや悪い ○悪い</td>
+                </tr>
+                <tr>
+                    <th>ドクター</th>
+                    <td colspan="3">岩永 斉</td>
+                </tr>
+                <tr>
+                    <th>記録係</th>
+                    <td colspan="3">チーム名: 三菱重工長崎 Neptunus 氏名: 森 拓也</td>
+                </tr>
+            </table>
+        </div>
+        <div class="info-right">
+            <table class="info-table">
+                <tbody>
+                    <tr>
+                        <th style="width: 30%;">レフリー</th>
+                        <td colspan="2">吉野 滉平 (九州協会公認)</td>
+                        <td class="sign">sign 吉野</td>
+                    </tr>
+                    <tr>
+                        <th rowspan="3">アシスタント<br>レフリー</th>
+                        <th class="ar-label-cell">AR1</th>
+                        <td colspan="2">朝長 和大 (九州協会公認)</td>
+                    </tr>
+                    <tr>
+                        <th class="ar-label-cell">AR2</th>
+                        <td colspan="2">山口 泰明 (九州協会公認)</td>
+                    </tr>
+                    <tr>
+                        <th class="ar-label-cell">AR3</th>
+                        <td colspan="2">川端 裕也 (長崎県ラグビー協会)</td>
+                    </tr>
+                    <tr>
+                        <th>マッチ<br>コミッショナー</th>
+                        <td colspan="2">海部 清治</td>
+                        <td class="sign">sign 海部</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+    
+    <!-- ========== メインコンテンツ：選手リストとスコア ========== -->
+    <section class="main-content">
+        <!-- Home チーム -->
+        <div class="team-section home">
+            <div class="team-name">チーム名: 三菱重工長崎 Neptunus</div>
+            <table class="player-list">
+                <colgroup>
+                    <col style="width: 10%;">
+                    <col style="width: 55%;">
+                    <col style="width: 15%;">
+                    <col style="width: 20%;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>氏 名</th>
+                        <th>(年齢)</th>
+                        <th>Pos.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>1</td><td>鈴木 巽</td><td>24</td><td rowspan="8">FW</td></tr>
+                    <tr><td>2</td><td>桑原 侑生</td><td>19</td></tr>
+                    <tr><td>3</td><td>河口 真翔</td><td>23</td></tr>
+                    <tr><td>4</td><td>安立 祥一郎</td><td>27</td></tr>
+                    <tr><td>5</td><td>加藤 匠</td><td>27</td></tr>
+                    <tr><td>6</td><td>入江 大夢</td><td>32</td></tr>
+                    <tr><td><span class="circled-number">7</span></td><td>山道 岬</td><td>27</td></tr>
+                    <tr><td>8</td><td>中尾 進太郎</td><td>32</td></tr>
+                    <tr><td>9</td><td>有川 航汰</td><td>24</td><td rowspan="4">HB</td></tr>
+                    <tr><td>10</td><td>浦川 進之介</td><td>28</td></tr>
+                    <tr><td>11</td><td>岸 詢輔</td><td>32</td></tr>
+                    <tr><td>12</td><td>山崎 太星</td><td>30</td></tr>
+                    <tr><td>13</td><td>高尾 凌平</td><td>33</td><td rowspan="3">TB</td></tr>
+                    <tr><td>14</td><td>伊東 岳</td><td>27</td></tr>
+                    <tr><td>15</td><td>山崎 雄希</td><td>32</td></tr>
+                    <tr><td>16</td><td>-</td><td>-</td><td rowspan="1">FB</td></tr>
+                    <tr><td>17</td><td>緒方 竜大</td><td>43</td><td rowspan="7">Re</td></tr>
+                    <tr><td>18</td><td>清原 拓哉</td><td>31</td></tr>
+                    <tr><td>19</td><td>田中 雄大</td><td>23</td></tr>
+                    <tr><td>20</td><td>前原 正貴</td><td>30</td></tr>
+                    <tr><td>21</td><td>立木 亮</td><td>40</td></tr>
+                    <tr><td>22</td><td>牧野 綾晟</td><td>23</td></tr>
+                    <tr><td>23</td><td>本山 嵐士</td><td>23</td></tr>
+                </tbody>
+            </table>
+            <div class="note">◆ゲームキャプテンに○印をつけてください</div>
+        </div>
+        
+        <!-- スコアボード -->
+        <div class="score-section">
+            <table class="score-board">
+                <thead>
+                    <tr><th colspan="5">得 点</th></tr>
+                    <tr><th colspan="2">Home</th><th rowspan="2"></th><th colspan="2">Away</th></tr>
+                    <tr><th>前半</th><th>後半</th><th>前半</th><th>後半</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>4</td><td>6</td><th>T</th><td>1</td><td>3</td></tr>
+                    <tr><td>1</td><td>5</td><th>G</th><td>1</td><td>3</td></tr>
+                    <tr><td>0</td><td>0</td><th>PT</th><td>0</td><td>0</td></tr>
+                    <tr><td>0</td><td>0</td><th>PG</th><td>0</td><td>0</td></tr>
+                    <tr><td>0</td><td>0</td><th>DG</th><td>0</td><td>0</td></tr>
+                    <tr><td>22</td><td>40</td><th>計</th><td>7</td><td>21</td></tr>
+                    <tr>
+                        <td colspan="2" style="font-weight: bold;">62</td>
+                        <th>合計</th>
+                        <td colspan="2" style="font-weight: bold;">28</td>
+                    </tr>
+                </tbody>
+            </table>
+            <table>
+                <tr><td></td><th>勝ち点</th><td></td></tr>
+                <tr><td></td><th>勝ち点<br>累計</th><td></td></tr>
+            </table>
+            <table class="penalty-board">
+                <thead>
+                    <tr><th colspan="5">反 則</th></tr>
+                </thead>
+                <tbody>
+                    <tr><th>PK</th><th>FK</th><th rowspan="2">前半</th><th>PK</th><th>FK</th></tr>
+                    <tr><td>1</td><td>0</td><td>3</td><td>0</td></tr>
+                    <tr><th>PK</th><th>FK</th><th rowspan="2">後半</th><th>PK</th><th>FK</th></tr>
+                    <tr><td>6</td><td>0</td><td>4</td><td>0</td></tr>
+                    <tr><td>7</td><td>0</td><th>合計</th><td>7</td><td>0</td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Away チーム -->
+        <div class="team-section away">
+            <div class="team-name">チーム名: 日特スパークテックWKS</div>
+            <table class="player-list">
+                <colgroup>
+                    <col style="width: 10%;">
+                    <col style="width: 55%;">
+                    <col style="width: 15%;">
+                    <col style="width: 20%;">
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>氏 名</th>
+                        <th>(年齢)</th>
+                        <th>Pos.</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>1</td><td>図師 裕太朗</td><td>30</td><td rowspan="8">FW</td></tr>
+                    <tr><td>2</td><td>松下 優寛</td><td>22</td></tr>
+                    <tr><td><span class="circled-number">3</span></td><td>吉窪 胤彦</td><td>30</td></tr>
+                    <tr><td>4</td><td>福島 祐亮</td><td>24</td></tr>
+                    <tr><td>5</td><td>松木 竜之助</td><td>33</td></tr>
+                    <tr><td>6</td><td>豊満 秀</td><td>21</td></tr>
+                    <tr><td>7</td><td>山中 太輝</td><td>22</td></tr>
+                    <tr><td>8</td><td>金井 海希也</td><td>24</td></tr>
+                    <tr><td>9</td><td>黒葛野 拓夢</td><td>24</td><td rowspan="4">HB</td></tr>
+                    <tr><td>10</td><td>栗巣 礼二</td><td>29</td></tr>
+                    <tr><td>11</td><td>宋 白十</td><td>21</td></tr>
+                    <tr><td>12</td><td>山下 毅</td><td>21</td></tr>
+                    <tr><td>13</td><td>森 太陽</td><td>24</td><td rowspan="3">TB</td></tr>
+                    <tr><td>14</td><td>永里 侑一</td><td>37</td></tr>
+                    <tr><td>15</td><td>湯浅 竣貴</td><td>24</td></tr>
+                    <tr><td>16</td><td>田中 大喜</td><td>34</td><td rowspan="1">FB</td></tr>
+                    <tr><td>17</td><td>蒲牟田 晃広</td><td>33</td><td rowspan="7">Re</td></tr>
+                    <tr><td>18</td><td>長松軒 祥太</td><td>35</td></tr>
+                    <tr><td>19</td><td>草野 洋幸</td><td>41</td></tr>
+                    <tr><td>20</td><td>橋口 航大</td><td>18</td></tr>
+                    <tr><td>21</td><td>西谷 光瑠</td><td>20</td></tr>
+                    <tr><td>22</td><td>福岡 隆一</td><td>51</td></tr>
+                    <tr><td>23</td><td>平良 海斗</td><td>26</td></tr>
+                </tbody>
+            </table>
+            <div class="note">◆ゲームキャプテンに○印をつけてください</div>
+        </div>
+    </section>
+
+    <!-- ========== 交替・カード情報 ========== -->
+    <div class="note">交替・・・負傷/入替・・・戦術 脳震盪またはその疑いがある場合には( )に×を記すこと</div>
+    <section class="sub-cards-section">
+        <!-- Home 側 -->
+        <div class="sub-group">
+            <table class="sub-table">
+                <colgroup>
+                    <col style="width: 18%;"> <!-- 種類 -->
+                    <col style="width: 14%;"> <!-- 時間 -->
+                    <col style="width: 18%;"> <!-- 背番号 -->
+                    <col style="width: 14%;"> <!-- 一時退場 時間 -->
+                    <col style="width: 18%;"> <!-- 一時退場 背番号 -->
+                    <col style="width: 18%;"> <!-- 内容 -->
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th colspan="3">Home 交替/入替</th>
+                        <th colspan="3">Home 一時的退場</th>
+                    </tr>
+                    <tr>
+                        <th>種類</th>
+                        <th>時間</th>
+                        <th>背番号</th>
+                        <th>時間</th>
+                        <th>背番号</th>
+                        <th>内容</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>○交替●入替</td><td>後半20分</td><td>3 → 18 ( )</td><td></td><td></td><td class="content-cell"></td></tr>
+                    <tr><td>○交替●入替</td><td>後半25分</td><td>4 → 19 ( )</td><td></td><td></td><td class="content-cell"></td></tr>
+                    <tr><td>○交替●入替</td><td>後半27分</td><td>9 → 20 ( )</td><td></td><td></td><td class="content-cell"></td></tr>
+                    <tr><td>○交替●入替</td><td>後半30分</td><td>1 → 17 ( )</td><td></td><td></td><td class="content-cell"></td></tr>
+                    <tr><td>○交替●入替</td><td>後半32分</td><td>11 → 21 ( )</td><td></td><td></td><td class="content-cell"></td></tr>
+                    <tr><td>○交替●入替</td><td>後半36分</td><td>15 → 23 ( )</td><td></td><td></td><td class="content-cell"></td></tr>
+                    <tr><td>○交替○入替</td><td>　半　分</td><td>→( )</td><td></td><td></td><td class="content-cell"></td></tr>
+                    <tr><td>○交替○入替</td><td>　半　分</td><td>→( )</td><td></td><td></td><td class="content-cell"></td></tr>
+                    <tr><td>○交替○入替</td><td>　半　分</td><td>→( )</td><td></td><td></td><td class="content-cell"></td></tr>
+                </tbody>
+            </table>
+            <table class="sub-table card-table">
+                <colgroup>
+                    <col style="width: 35%;">  <!-- 種類 -->
+                    <col style="width: 22%;">  <!-- 時間 -->
+                    <col style="width: 18%;">  <!-- 背番号 -->
+                    <col style="width: 25%;">  <!-- 内容 -->
+                </colgroup>
+                <thead>
+                    <tr><th colspan="4">Home カード/処分</th></tr>
+                </thead>
+                <tbody>
+                    <tr><th>種類</th><th>時間</th><th>背番号</th><th>内容</th></tr>
+                    <tr><td>○イエロー○レッド</td><td>　半　分</td><td></td><td></td></tr>
+                    <tr><td>○イエロー○レッド</td><td>　半　分</td><td></td><td></td></tr>
+                    <tr><td>○イエロー○レッド</td><td>　半　分</td><td></td><td></td></tr>
+                    <tr><td>○イエロー○レッド</td><td>　半　分</td><td></td><td></td></tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Away 側 -->
+        <div class="sub-group">
+            <table class="sub-table">
+                <colgroup>
+                    <col style="width: 18%;"> <!-- 種類 -->
+                    <col style="width: 14%;"> <!-- 時間 -->
+                    <col style="width: 18%;"> <!-- 背番号 -->
+                    <col style="width: 14%;"> <!-- 一時退場 時間 -->
+                    <col style="width: 18%;"> <!-- 一時退場 背番号 -->
+                    <col style="width: 18%;"> <!-- 内容 -->
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th colspan="3">Away 交替/入替</th>
+                        <th colspan="3">Away 一時的退場</th>
+                    </tr>
+                    <tr>
+                        <th>種類</th>
+                        <th>時間</th>
+                        <th>背番号</th>
+                        <th>時間</th>
+                        <th>背番号</th>
+                        <th>内容</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>●交替○入替</td><td>前半3分</td><td>15 → 23 ( )</td><td></td><td></td><td class="content-cell"></td></tr>
+                    <tr><td>●交替○入替</td><td>後半11分</td><td>7 → 16 ( )</td><td></td><td></td><td class="content-cell"></td></tr>
+                    <tr><td>●交替○入替</td><td>後半19分</td><td>2 → 21 ( )</td><td></td><td></td><td class="content-cell"></td></tr>
+                    <tr><td>●交替○入替</td><td>後半27分</td><td>5 → 20 ( )</td><td></td><td></td><td class="content-cell"></td></tr>
+                    <tr><td>●交替○入替</td><td>後半32分</td><td>1 → 17 ( )</td><td></td><td></td><td class="content-cell"></td></tr>
+                    <tr><td>●交替○入替</td><td>後半36分</td><td>23 → 22 ( )</td><td></td><td></td><td class="content-cell"></td></tr>
+                    <tr><td>○交替○入替</td><td>　半　分</td><td>→( )</td><td></td><td></td><td class="content-cell"></td></tr>
+                    <tr><td>○交替○入替</td><td>　半　分</td><td>→( )</td><td></td><td></td><td class="content-cell"></td></tr>
+                    <tr><td>○交替○入替</td><td>　半　分</td><td>→( )</td><td></td><td></td><td class="content-cell"></td></tr>
+                </tbody>
+            </table>
+            <table class="sub-table card-table">
+                <colgroup>
+                    <col style="width: 35%;">  <!-- 種類 -->
+                    <col style="width: 22%;">  <!-- 時間 -->
+                    <col style="width: 18%;">  <!-- 背番号 -->
+                    <col style="width: 25%;">  <!-- 内容 -->
+                </colgroup>
+                <thead>
+                    <tr><th colspan="4">Away カード/処分</th></tr>
+                </thead>
+                <tbody>
+                    <tr><th>種類</th><th>時間</th><th>背番号</th><th>内容</th></tr>
+                    <tr><td>○イエロー○レッド</td><td>　半　分</td><td></td><td></td></tr>
+                    <tr><td>○イエロー○レッド</td><td>　半　分</td><td></td><td></td></tr>
+                    <tr><td>○イエロー○レッド</td><td>　半　分</td><td></td><td></td></tr>
+                    <tr><td>○イエロー○レッド</td><td>　半　分</td><td></td><td></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- ========== 得点経過 ========== -->
+    <section class="timeline-section">
+        <div class="timeline-header">
+            <span>得点経過 前半Kick off チーム名: 三菱重工長崎Neptunus</span>
+            <span>後半Kick off チーム名: 日特スパークテックWKS</span>
+        </div>
+        <div class="timeline-body">
+            <table class="timeline-table">
+                <colgroup>
+                    <col style="width: 18%;">  <!-- 時間 -->
+                    <col style="width: 32%;">  <!-- チーム名 -->
+                    <col style="width: 20%;">  <!-- 背番号・名前 -->
+                    <col style="width: 10%;">  <!-- 種類 -->
+                    <col style="width: 8%;">   <!-- H -->
+                    <col style="width: 4%;">   <!-- 空白 -->
+                    <col style="width: 8%;">   <!-- A -->
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>時間</th>
+                        <th>チーム名</th>
+                        <th>背番号・名前</th>
+                        <th>種類</th>
+                        <th>H</th>
+                        <th></th>
+                        <th>A</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>前半11分</td><td class="team-name-cell">三菱重工長崎</td><td>9/有川</td><td>T</td><td>5</td><td>-</td><td>0</td></tr>
+                    <tr><td>前半12分</td><td class="team-name-cell">三菱重工長崎</td><td>12/山崎</td><td>G</td><td>7</td><td>-</td><td>0</td></tr>
+                    <tr><td>前半19分</td><td class="team-name-cell">三菱重工長崎</td><td>15/山崎</td><td>T</td><td>12</td><td>-</td><td>0</td></tr>
+                    <tr><td>前半20分</td><td class="team-name-cell">三菱重工長崎</td><td>12/山崎</td><td>GX</td><td>12</td><td>-</td><td>0</td></tr>
+                    <tr><td>前半24分</td><td class="team-name-cell">三菱重工長崎</td><td>15/山崎</td><td>DGX</td><td>12</td><td>-</td><td>0</td></tr>
+                    <tr><td>前半25分</td><td class="team-name-cell">三菱重工長崎</td><td>8/中尾</td><td>T</td><td>17</td><td>-</td><td>0</td></tr>
+                    <tr><td>前半26分</td><td class="team-name-cell">三菱重工長崎</td><td>12/山崎</td><td>GX</td><td>17</td><td>-</td><td>0</td></tr>
+                    <tr><td>前半28分</td><td class="team-name-cell">三菱重工長崎</td><td>12/山崎</td><td>T</td><td>22</td><td>-</td><td>0</td></tr>
+                    <tr><td>前半29分</td><td class="team-name-cell">三菱重工長崎</td><td>12/山崎</td><td>GX</td><td>22</td><td>-</td><td>0</td></tr>
+                    <tr><td>前半41分</td><td class="team-name-cell">日特スパークテック</td><td>11/宋</td><td>T</td><td>22</td><td>-</td><td>5</td></tr>
+                    <tr><td>前半42分</td><td class="team-name-cell">日特スパークテック</td><td>9/黒葛野</td><td>G</td><td>22</td><td>-</td><td>7</td></tr>
+                    <tr><td>半　分</td><td></td><td>/</td><td></td><td>-</td><td></td><td>-</td></tr>
+                    <tr><td>後半1分</td><td class="team-name-cell">三菱重工長崎</td><td>6/入江</td><td>T</td><td>27</td><td>-</td><td>7</td></tr>
+                    <tr><td>後半2分</td><td class="team-name-cell">三菱重工長崎</td><td>12/山崎</td><td>G</td><td>29</td><td>-</td><td>7</td></tr>
+                    <tr><td>後半5分</td><td class="team-name-cell">三菱重工長崎</td><td>4/安立</td><td>T</td><td>34</td><td>-</td><td>7</td></tr>
+                    <tr><td>後半6分</td><td class="team-name-cell">三菱重工長崎</td><td>12/山崎</td><td>G</td><td>36</td><td>-</td><td>7</td></tr>
+                </tbody>
+            </table>
+            <table class="timeline-table">
+                <colgroup>
+                    <col style="width: 18%;">  <!-- 時間 -->
+                    <col style="width: 32%;">  <!-- チーム名 -->
+                    <col style="width: 20%;">  <!-- 背番号・名前 -->
+                    <col style="width: 10%;">  <!-- 種類 -->
+                    <col style="width: 8%;">   <!-- H -->
+                    <col style="width: 4%;">   <!-- 空白 -->
+                    <col style="width: 8%;">   <!-- A -->
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>時間</th>
+                        <th>チーム名</th>
+                        <th>背番号・名前</th>
+                        <th>種類</th>
+                        <th>H</th>
+                        <th></th>
+                        <th>A</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>後半8分</td><td class="team-name-cell">三菱重工長崎</td><td>8/中尾</td><td>T</td><td>41</td><td>-</td><td>7</td></tr>
+                    <tr><td>後半9分</td><td class="team-name-cell">三菱重工長崎</td><td>12/山崎</td><td>G</td><td>43</td><td>-</td><td>7</td></tr>
+                    <tr><td>後半18分</td><td class="team-name-cell">日特スパークテック</td><td>8/金井</td><td>T</td><td>43</td><td>-</td><td>12</td></tr>
+                    <tr><td>後半19分</td><td class="team-name-cell">日特スパークテック</td><td>9/黒葛野</td><td>G</td><td>43</td><td>-</td><td>14</td></tr>
+                    <tr><td>後半22分</td><td class="team-name-cell">三菱重工長崎</td><td>11/岸</td><td>T</td><td>48</td><td>-</td><td>14</td></tr>
+                    <tr><td>後半23分</td><td class="team-name-cell">三菱重工長崎</td><td>12/山崎</td><td>G</td><td>50</td><td>-</td><td>14</td></tr>
+                    <tr><td>後半26分</td><td class="team-name-cell">日特スパークテック</td><td>11/宋</td><td>T</td><td>50</td><td>-</td><td>19</td></tr>
+                    <tr><td>後半27分</td><td class="team-name-cell">日特スパークテック</td><td>9/黒葛野</td><td>G</td><td>50</td><td>-</td><td>21</td></tr>
+                    <tr><td>後半32分</td><td class="team-name-cell">三菱重工長崎</td><td>6/入江</td><td>T</td><td>55</td><td>-</td><td>21</td></tr>
+                    <tr><td>後半33分</td><td class="team-name-cell">三菱重工長崎</td><td>12/山崎</td><td>G</td><td>57</td><td>-</td><td>21</td></tr>
+                    <tr><td>後半34分</td><td class="team-name-cell">日特スパークテック</td><td>8/金井</td><td>T</td><td>57</td><td>-</td><td>26</td></tr>
+                    <tr><td>後半35分</td><td class="team-name-cell">日特スパークテック</td><td>9/黒葛野</td><td>G</td><td>57</td><td>-</td><td>28</td></tr>
+                    <tr><td>後半39分</td><td class="team-name-cell">三菱重工長崎</td><td>6/入江</td><td>T</td><td>62</td><td>-</td><td>28</td></tr>
+                    <tr><td>後半40分</td><td class="team-name-cell">三菱重工長崎</td><td>12/山崎</td><td>GX</td><td>62</td><td>-</td><td>28</td></tr>
+                    <tr><td>半　分</td><td></td><td>/</td><td></td><td>-</td><td></td><td>-</td></tr>
+                    <tr><td>半　分</td><td></td><td>/</td><td></td><td>-</td><td></td><td>-</td></tr>
+                </tbody>
+            </table>
+            <div class="notes-section">
+                <div class="notes-header">特記事項</div>
+                <div class="contact-info">
+                    【九州ラグビー協会】<br>
+                    (電話) 092-410-8258<br>
+                    (FAX) 092-410-8257<br>
+                    (mail) kyushu@rugby-japan.or.jp
+                </div>
+            </div>
+        </div>
+        <div class="timeline-footer">
+            種類: 「T=トライ」・「G=ゴール成功」・「GX=ゴール失敗」・「PT=ペナルティートライ」・「PG=ペナルティゴール成功」・<br>
+            「PGX=ペナルティーゴール失敗」・「DG=ドロップゴール成功」・「DGX=ドロップゴール失敗」 ★得点経過の名前は苗字だけ記載
+        </div>
+    </section>
+
+</div>
+
+</body>
+</html>
